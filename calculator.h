@@ -57,4 +57,7 @@ void addExpression(pList list, int num);
 void viewAll(pList list);
 void makePostfix(char* str, pList list, pOperator topOperator);
 void makeExpression(pList list);
-void multify(pDigit first, pDigit second);
+pDigit multiply(pDigit first, pDigit second);
+pDigit plus(pDigit first, pDigit second);
+pDigit minus(pDigit first, pDigit second);
+pDigit divide(pDigit first, pDigit second);

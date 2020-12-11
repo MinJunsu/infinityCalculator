@@ -173,11 +173,21 @@ void viewAll(pList list)
     }
 }
 
+pDigit initializeDigit()
+{
+    pDigit tmp = malloc(sizeof(Digit));
+    tmp->before = NULL;
+    tmp->beforeSize = 0;
+    tmp->after = NULL;
+    tmp->afterSize = 0;
+    return tmp;
+}
+
 void makeExpression(pList list)
 {
     pExpression seek = list->head->next;
     pOperand operand = NULL;
-    pDigit digit = NULL;
+    pDigit digit = initializeDigit();
     pNum num = NULL;
 
     int i = 0;
@@ -186,6 +196,7 @@ void makeExpression(pList list)
     while(seek != list->tail)
     {
         int tmp = seek->num;
+        printf("%d ", tmp);
         if(0 <= tmp && tmp <= 9)
         {
             pushNum(&num, tmp);
@@ -202,19 +213,32 @@ void makeExpression(pList list)
         {
             digit->afterSize = length[1];
             digit->after = num;
-            num = NULL;
+            length[0] = 0;
+            length[1] = 0;
             lengthFlag = 0;
             pushOperand(&operand, digit);
-            digit = NULL;
+            digit = initializeDigit();
         }
         else
         {
-            pDigit firstDigit = popOperand(&operand);
             pDigit secondDigit = popOperand(&operand);
+            pDigit firstDigit = popOperand(&operand);
             switch (tmp)
             {
                 case 42:
-                    multify(firstDigit, secondDigit);
+                    pushOperand(&operand, multiply(firstDigit, secondDigit));
+                    break;
+
+                case 43:
+                    pushOperand(&operand, plus(firstDigit, secondDigit));
+                    break;
+
+                case 45:
+                    pushOperand(&operand, minus(firstDigit, secondDigit));
+                    break;
+
+                case 47:
+                    pushOperand(&operand, divide(firstDigit, secondDigit));
                     break;
 
             }
@@ -223,9 +247,56 @@ void makeExpression(pList list)
     }
 }
 
-void multify(pDigit first, pDigit second)
+pDigit multiply(pDigit first, pDigit second)
 {
-    printf("\n »çÀÌÁî %d %d \n", first->beforeSize, second->beforeSize);
+//    printf("\n first beforeSize : %d, secondSize : %d \n", first->beforeSize, first->afterSize);
+//    printf(" second beforeSize : %d, secondSize : %d \n", second->beforeSize, second->afterSize);
+    return first;
+}
+
+pDigit plus(pDigit first, pDigit second)
+{
+    printf("\n first beforeSize : %d, secondSize : %d \n", first->beforeSize, first->afterSize);
+    printf(" second beforeSize : %d, secondSize : %d \n", second->beforeSize, second->afterSize);
+
+    printf("\n firstNumber : ");
+    for(int i = 0; i < first->beforeSize; i++)
+    {
+        printf("%d ", popNum(&(first->before)));
+    }
+    printf(". ");
+    for(int i = 0; i< first->afterSize; i++)
+    {
+        printf("%d ", popNum(&(first->after)));
+    }
+
+    printf("\n secondNumber : ");
+    for(int i = 0; i < second->beforeSize; i++)
+    {
+        printf("%d ", popNum(&(second->before)));
+    }
+    printf(". ");
+    for(int i = 0; i < second->afterSize; i++)
+    {
+        printf("%d ", popNum(&(second->after)));
+    }
+    printf("\n\n");
+
+    return first;
+}
+
+pDigit minus(pDigit first, pDigit second)
+{
+//    printf("\n first beforeSize : %d, secondSize : %d \n", first->beforeSize, first->afterSize);
+//    printf(" second beforeSize : %d, secondSize : %d \n", second->beforeSize, second->afterSize);
+    return first;
+}
+
+pDigit divide(pDigit first, pDigit second)
+{
+//    printf("\n first beforeSize : %d, secondSize : %d \n", first->beforeSize, first->afterSize);
+//    printf(" second beforeSize : %d, secondSize : %d \n", second->beforeSize, second->afterSize);
+    return first;
 }
 
 void makePostfix(char* str, pList pList, pOperator Operator)
