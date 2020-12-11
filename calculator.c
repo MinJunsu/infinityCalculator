@@ -244,6 +244,7 @@ void makeExpression(pList list)
             }
         }
         seek = seek->next;
+        free(seek->prev);
     }
 }
 
@@ -256,33 +257,46 @@ pDigit multiply(pDigit first, pDigit second)
 
 pDigit plus(pDigit first, pDigit second)
 {
-    printf("\n first beforeSize : %d, secondSize : %d \n", first->beforeSize, first->afterSize);
-    printf(" second beforeSize : %d, secondSize : %d \n", second->beforeSize, second->afterSize);
+    pNum before = NULL;
+    pNum after = NULL;
+    int beforeSize = 0;
+    int afterSize = 0;
+    pDigit result = initializeDigit();
 
-    printf("\n firstNumber : ");
+    // before 및 after에 pushNum(&before, num), pushNum(&after, num) 을 사용하여 넣어주고 각 자리수를 늘려서 계산해주시면 됩니다.
+    /*
+    printf("\nfirst beforeSize : %d, secondSize : %d\n", first->beforeSize, first->afterSize);
+    printf("second beforeSize : %d, secondSize : %d\n", second->beforeSize, second->afterSize);
+
+    printf("\nfirstNumber : ");
     for(int i = 0; i < first->beforeSize; i++)
     {
         printf("%d ", popNum(&(first->before)));
     }
-    printf(". ");
+    printf(" . ");
     for(int i = 0; i< first->afterSize; i++)
     {
         printf("%d ", popNum(&(first->after)));
     }
 
-    printf("\n secondNumber : ");
+    printf("\nsecondNumber : ");
     for(int i = 0; i < second->beforeSize; i++)
     {
         printf("%d ", popNum(&(second->before)));
     }
-    printf(". ");
+    printf(" . ");
     for(int i = 0; i < second->afterSize; i++)
     {
         printf("%d ", popNum(&(second->after)));
     }
     printf("\n\n");
+    */
+    result->beforeSize = beforeSize;
+    result->afterSize = afterSize;
+    result->before = before;
+    result->after = after;
 
-    return first;
+    return result;
 }
 
 pDigit minus(pDigit first, pDigit second)
