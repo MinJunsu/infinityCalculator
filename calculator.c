@@ -183,7 +183,7 @@ pDigit initializeDigit()
     return tmp;
 }
 
-void makeExpression(pList list)
+pDigit makeExpression(pList list)
 {
     pExpression seek = list->head->next;
     pOperand operand = NULL;
@@ -254,6 +254,7 @@ void makeExpression(pList list)
         seek = seek->next;
 //        free(seek->prev);
     }
+    return popOperand(&operand);
 }
 
 pDigit multiply(pDigit first, pDigit second)
