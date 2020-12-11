@@ -17,6 +17,36 @@ typedef struct operator
     struct operator* next;
 } Operator, *pOperator;
 
+typedef struct num
+{
+    int num;
+    struct num* next;
+} Num, *pNum;
+
+typedef struct digit
+{
+    int beforeSize;
+    int afterSize;
+    struct num* before;
+    struct num* after;
+} Digit, *pDigit;
+
+typedef struct operand
+{
+    struct digit* digit;
+    struct operand* next;
+} Operand, *pOperand;
+
+
+
+pNum getNum(int num);
+int pushNum(pNum* top, int op);
+inline int emptyNum(pNum top);
+int popNum(pNum* top);
+pOperand getOperand(pDigit digit);
+int pushOperand(pOperand* top, pDigit digit);
+inline int emptyOperand(pOperand top);
+pDigit popOperand(pOperand* top);
 pOperator getOperator(char op);
 int pushOperator(pOperator* top, char op);
 inline int emptyOperator(pOperator top);
@@ -26,3 +56,5 @@ void initList(pList list);
 void addExpression(pList list, int num);
 void viewAll(pList list);
 void makePostfix(char* str, pList list, pOperator topOperator);
+void makeExpression(pList list);
+void multify(pDigit first, pDigit second);
