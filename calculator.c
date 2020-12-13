@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
 pNum getNum(int num)
 {
     Num nullNode = { 0, NULL };
@@ -264,6 +265,96 @@ pDigit multiply(pDigit first, pDigit second)
     return first;
 }
 
+pNum beforeCal(pDigit max, pDigit min, int max_before, int min_before, bool carry, bool *result)
+{
+    pNum before = NULL;
+    // 3.574 + 2.441 1. 015
+    //연산해야 할 상대 숫자가 없으면 carry를 고려해 그 수를 그대로 스택에 쌓는다.
+    while (max_before != 0 && min_before == 0)
+    {
+        int new = popNum(&(max->before));
+        if (carry)
+        {
+            new++;
+            carry = false;
+        }
+        if ((new / 10) >= 1)
+        {
+            carry = true;
+            new = new - 10;
+        }
+        pushNum(&before, new);
+        max_before--;
+        //만약 가장 큰 자리 수에서 자릿수가 바뀐다면 1을 추가로 스택에 쌓는다
+        //ex) 9+3 = 12 -> 2, '1' 1을 추가로 쌓는다
+    }
+    while (max_before != 0)
+    {
+        int tmpbefore = popNum(&(max->before)) + popNum(&(min->before));
+        if (carry)
+        {
+            tmpbefore++;
+            carry = false;
+        }
+        if ((tmpbefore / 10) >= 1)
+        {
+            carry = true;
+            tmpbefore = tmpbefore - 10;
+        }
+        pushNum(&before, tmpbefore);
+        max_before--;
+        min_before--;
+    }
+    //만약 가장 큰 자리 수에서 자릿수가 바뀐다면 1을 추가로 스택에 쌓는다
+    //ex) 9+3 = 12 -> 2, '1' 1을 추가로 쌓는다
+    if(max_before == 0)
+    {
+        if (carry)
+        {
+            pushNum(&before, 1);
+            //before 연산 이후 carry가 true라면 size 증가
+        }
+    }
+
+    result = carry;
+    return before;
+}
+
+pNum afterCal(pDigit max, pDigit min, int max_after, int min_after, bool* result)
+{
+    pNum after = NULL;
+    bool carry = false;
+    //연산해야 할 상대 숫자가 없으면 그 수를 그대로 스택에 쌓는다.
+    while (max_after != min_after)
+    {
+        int new = popNum(&(max->after));
+        pushNum(&after, new);
+        max_after--;
+    }
+    //그 외의 경우 연산해야 할 수가 없을 때까지 더하기 연산
+    while (max_after != 0)
+    {
+        int tmpafter = popNum(&(max->after)) + popNum(&(min->after));
+        if (carry)
+        {
+            tmpafter++;
+            carry = false;
+        }
+        if ((tmpafter / 10) >= 1)
+        {
+            carry = true;
+            tmpafter = tmpafter - 10;
+        }
+        pushNum(&after, tmpafter);
+
+        max_after--;
+        min_after--;
+    }
+
+    result = carry;
+    return after;
+}
+
 pDigit plus(pDigit first, pDigit second)
 {
     pNum before = NULL;
@@ -272,37 +363,82 @@ pDigit plus(pDigit first, pDigit second)
     int afterSize = 0;
     pDigit result = initializeDigit();
 
-    // before 및 after에 pushNum(&before, num), pushNum(&after, num) 을 사용하여 넣어주고 각 자리수를 늘려서 계산해주시면 됩니다.
-    printf("\nfirst beforeSize : %d, secondSize : %d\n", first->beforeSize, first->afterSize);
-    printf("second beforeSize : %d, secondSize : %d\n", second->beforeSize, second->afterSize);
+    //first와 second의 size를 int형으로 저장한다.
+    int firstBeforesize = first->beforeSize;
+    int secondBeforesize = second->beforeSize;
+    int firstAftersize = first->afterSize;
+    int secondAftersize = second->afterSize;
 
-    printf("\nfirstNumber : ");
-    for(int i = 0; i < first->beforeSize; i++)
+    bool carry = false;
+
+    int maxAftersize;
+    int maxBeforesize;
+
+    //size 비교 후 더하기 연산, 결과값 size 측정
+    if (firstAftersize > secondAftersize)
     {
-        printf("%d ", popNum(&(first->before)));
+        maxAftersize = firstAftersize;
+        if(firstBeforesize > secondBeforesize)
+        {
+            maxBeforesize = firstBeforesize;
+            after = afterCal(first, second, firstAftersize, secondAftersize, &carry);
+            before = beforeCal(first, second, firstBeforesize, secondBeforesize, carry, &carry);
+        }
+        else
+        {
+            maxBeforesize = secondBeforesize;
+            after = afterCal(first, second, firstAftersize, secondAftersize, &carry);
+            before = beforeCal(second, first, secondBeforesize, firstBeforesize, carry, &carry);
+        }
     }
-    printf(" . ");
-    for(int i = 0; i< first->afterSize; i++)
+    else
     {
-        printf("%d ", popNum(&(first->after)));
+        maxAftersize = secondAftersize;
+        if (firstBeforesize > secondBeforesize)
+        {
+            maxBeforesize = firstBeforesize;
+            after = afterCal(second, first, secondAftersize, firstAftersize, &carry);
+            before = beforeCal(first, second, firstBeforesize, secondBeforesize, carry, &carry);
+        }
+        else
+        {
+            maxBeforesize = secondBeforesize;
+            after = afterCal(second, first, secondAftersize, firstAftersize, &carry);
+            before = beforeCal(second, first, secondBeforesize, firstBeforesize, carry, &carry);
+        }
+    }
+    // 0.54 + 0.56 = 1.10 0. 110
+
+    //결과값 size 설정
+    afterSize = maxAftersize;
+    if (carry)
+    {
+        beforeSize = maxBeforesize + 1;
+    }
+    else
+    {
+        beforeSize = maxBeforesize;
     }
 
-    printf("\nsecondNumber : ");
-    for(int i = 0; i < second->beforeSize; i++)
+    pNum resultBefore = NULL;
+    pNum resultAfter = NULL;
+    // result에 현재 스택 반대 순서대로 정렬
+    for (int i = 0; i < afterSize; i++)
     {
-        printf("%d ", popNum(&(second->before)));
+        int new = popNum(&after);
+        pushNum(&resultAfter, new);
     }
-    printf(" . ");
-    for(int i = 0; i < second->afterSize; i++)
+    for (int i = 0; i < beforeSize; i++)
     {
-        printf("%d ", popNum(&(second->after)));
+        int new = popNum(&before);
+        pushNum(&resultBefore, new);
     }
-    printf("\n\n");
+
 
     result->beforeSize = beforeSize;
     result->afterSize = afterSize;
-    result->before = before;
-    result->after = after;
+    result->before = resultBefore;
+    result->after = resultAfter;
 
     return result;
 }
