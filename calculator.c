@@ -197,7 +197,6 @@ pDigit makeExpression(pList list)
     while(seek != list->tail)
     {
         int tmp = seek->num;
-        printf("%d ", tmp);
         if(0 <= tmp && tmp <= 9)
         {
             pushNum(&num, tmp);
@@ -431,6 +430,12 @@ pDigit plus(pDigit first, pDigit second)
     result->afterSize = afterSize;
     result->before = resultBefore;
     result->after = resultAfter;
+
+    return result;
+}
+pDigit multiply(pDigit first, pDigit second)
+{
+    pDigit result = initializeDigit();
 
     return result;
 }

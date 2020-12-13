@@ -1,7 +1,7 @@
 #define bool   _Bool
 #define false  0
 #define true   1
-
+#include <stdlib.h>
 typedef struct expression
 {
     int num;
@@ -68,3 +68,4 @@ pDigit divide(pDigit first, pDigit second);
 void mul(int cnt,int x,int y,int f_size,int s_size);
 void up(int x,int y,int tmp);
 void check(int front, int back,int total_size);
+void returnValue(pDigit digit);
