@@ -65,3 +65,6 @@ pDigit multiply(pDigit first, pDigit second);
 pDigit plus(pDigit first, pDigit second);
 pDigit minus(pDigit first, pDigit second);
 pDigit divide(pDigit first, pDigit second);
+void mul(int cnt,int x,int y,int f_size,int s_size);
+void up(int x,int y,int tmp);
+void check(int front, int back,int total_size);
