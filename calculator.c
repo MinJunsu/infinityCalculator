@@ -265,32 +265,36 @@ pDigit multiply(pDigit first, pDigit second)
     return first;
 }
 
-pNum beforeCal(pDigit max, pDigit min, int max_before, int min_before, bool carry, bool *result)
+pNum beforeCal(pNum max, pNum min, int max_before, int min_before, bool carry, bool* result)
 {
     pNum before = NULL;
-    // 3.574 + 2.441 1. 015
-    //연산해야 할 상대 숫자가 없으면 carry를 고려해 그 수를 그대로 스택에 쌓는다.
-    while (max_before != 0 && min_before == 0)
-    {
-        int new = popNum(&(max->before));
-        if (carry)
-        {
-            new++;
-            carry = false;
-        }
-        if ((new / 10) >= 1)
-        {
-            carry = true;
-            new = new - 10;
-        }
-        pushNum(&before, new);
-        max_before--;
-        //만약 가장 큰 자리 수에서 자릿수가 바뀐다면 1을 추가로 스택에 쌓는다
-        //ex) 9+3 = 12 -> 2, '1' 1을 추가로 쌓는다
-    }
+//    while (max_before != 0 && min_before == 0)
+//    {
+//        int new = popNum(&max);
+//        if (carry)
+//        {
+//            new++;
+//            carry = false;
+//        }
+//        if ((new / 10) >= 1)
+//        {
+//            carry = true;
+//            new = new - 10;
+//        }
+//        pushNum(&before, new);
+//        max_before--;
+//    }
     while (max_before != 0)
     {
-        int tmpbefore = popNum(&(max->before)) + popNum(&(min->before));
+        int tmpbefore;
+        if(min_before > 0)
+        {
+            tmpbefore = popNum(&max) + popNum(&min);
+        }
+        else
+        {
+            tmpbefore = popNum(&max);
+        }
         if (carry)
         {
             tmpbefore++;
@@ -305,36 +309,33 @@ pNum beforeCal(pDigit max, pDigit min, int max_before, int min_before, bool carr
         max_before--;
         min_before--;
     }
-    //만약 가장 큰 자리 수에서 자릿수가 바뀐다면 1을 추가로 스택에 쌓는다
-    //ex) 9+3 = 12 -> 2, '1' 1을 추가로 쌓는다
+
     if(max_before == 0)
     {
         if (carry)
         {
             pushNum(&before, 1);
-            //before 연산 이후 carry가 true라면 size 증가
         }
     }
-
-    result = carry;
+    *result = carry;
     return before;
 }
 
-pNum afterCal(pDigit max, pDigit min, int max_after, int min_after, bool* result)
+pNum afterCal(pNum max, pNum min, int max_after, int min_after, bool* result)
 {
     pNum after = NULL;
     bool carry = false;
     //연산해야 할 상대 숫자가 없으면 그 수를 그대로 스택에 쌓는다.
     while (max_after != min_after)
     {
-        int new = popNum(&(max->after));
+        int new = popNum(&max);
         pushNum(&after, new);
         max_after--;
     }
     //그 외의 경우 연산해야 할 수가 없을 때까지 더하기 연산
     while (max_after != 0)
     {
-        int tmpafter = popNum(&(max->after)) + popNum(&(min->after));
+        int tmpafter = popNum(&max) + popNum(&min);
         if (carry)
         {
             tmpafter++;
@@ -351,7 +352,7 @@ pNum afterCal(pDigit max, pDigit min, int max_after, int min_after, bool* result
         min_after--;
     }
 
-    result = carry;
+    *result = carry;
     return after;
 }
 
@@ -363,13 +364,14 @@ pDigit plus(pDigit first, pDigit second)
     int afterSize = 0;
     pDigit result = initializeDigit();
 
-    //first와 second의 size를 int형으로 저장한다.
+    // first와 second의 size를 int형으로 저장한다.
     int firstBeforesize = first->beforeSize;
     int secondBeforesize = second->beforeSize;
     int firstAftersize = first->afterSize;
     int secondAftersize = second->afterSize;
 
     bool carry = false;
+    int resultFlag = 0;
 
     int maxAftersize;
     int maxBeforesize;
@@ -378,40 +380,37 @@ pDigit plus(pDigit first, pDigit second)
     if (firstAftersize > secondAftersize)
     {
         maxAftersize = firstAftersize;
+        after = afterCal(first->after, second->after, firstAftersize, secondAftersize, &carry);
         if(firstBeforesize > secondBeforesize)
         {
             maxBeforesize = firstBeforesize;
-            after = afterCal(first, second, firstAftersize, secondAftersize, &carry);
-            before = beforeCal(first, second, firstBeforesize, secondBeforesize, carry, &carry);
+            before = beforeCal(first->before, second->before, firstBeforesize, secondBeforesize, carry, &resultFlag);
         }
         else
         {
             maxBeforesize = secondBeforesize;
-            after = afterCal(first, second, firstAftersize, secondAftersize, &carry);
-            before = beforeCal(second, first, secondBeforesize, firstBeforesize, carry, &carry);
+            before = beforeCal(second->before, first->before, secondBeforesize, firstBeforesize, carry, &resultFlag);
         }
     }
     else
     {
         maxAftersize = secondAftersize;
+        after = afterCal(second->after, first->after, secondAftersize, firstAftersize, &carry);
         if (firstBeforesize > secondBeforesize)
         {
             maxBeforesize = firstBeforesize;
-            after = afterCal(second, first, secondAftersize, firstAftersize, &carry);
-            before = beforeCal(first, second, firstBeforesize, secondBeforesize, carry, &carry);
+            before = beforeCal(first->before, second->before, firstBeforesize, secondBeforesize, carry, &resultFlag);
         }
         else
         {
             maxBeforesize = secondBeforesize;
-            after = afterCal(second, first, secondAftersize, firstAftersize, &carry);
-            before = beforeCal(second, first, secondBeforesize, firstBeforesize, carry, &carry);
+            before = beforeCal(second->before, first->before, secondBeforesize, firstBeforesize, carry, &resultFlag);
         }
     }
-    // 0.54 + 0.56 = 1.10 0. 110
 
     //결과값 size 설정
     afterSize = maxAftersize;
-    if (carry)
+    if (resultFlag)
     {
         beforeSize = maxBeforesize + 1;
     }
@@ -422,7 +421,7 @@ pDigit plus(pDigit first, pDigit second)
 
     pNum resultBefore = NULL;
     pNum resultAfter = NULL;
-    // result에 현재 스택 반대 순서대로 정렬
+
     for (int i = 0; i < afterSize; i++)
     {
         int new = popNum(&after);
