@@ -1,7 +1,6 @@
-#include "calculator.h"
+#include "calculate.h"
 #include <stdlib.h>
 #include <stdio.h>
-
 
 pNum getNum(int num)
 {
@@ -257,369 +256,41 @@ pDigit makeExpression(pList list)
     return popOperand(&operand);
 }
 
-pNum beforeCal(pNum max, pNum min, int max_before, int min_before, bool carry, bool* result)
-{
-    pNum before = NULL;
-//    while (max_before != 0 && min_before == 0)
-//    {
-//        int new = popNum(&max);
-//        if (carry)
-//        {
-//            new++;
-//            carry = false;
-//        }
-//        if ((new / 10) >= 1)
-//        {
-//            carry = true;
-//            new = new - 10;
-//        }
-//        pushNum(&before, new);
-//        max_before--;
-//    }
-    while (max_before != 0)
-    {
-        int tmpbefore;
-        if(min_before > 0)
-        {
-            tmpbefore = popNum(&max) + popNum(&min);
-        }
-        else
-        {
-            tmpbefore = popNum(&max);
-        }
-        if (carry)
-        {
-            tmpbefore++;
-            carry = false;
-        }
-        if ((tmpbefore / 10) >= 1)
-        {
-            carry = true;
-            tmpbefore = tmpbefore - 10;
-        }
-        pushNum(&before, tmpbefore);
-        max_before--;
-        min_before--;
-    }
-
-    if(max_before == 0)
-    {
-        if (carry)
-        {
-            pushNum(&before, 1);
-        }
-    }
-    *result = carry;
-    return before;
-}
-
-pNum afterCal(pNum max, pNum min, int max_after, int min_after, bool* result)
-{
-    pNum after = NULL;
-    bool carry = false;
-    //연산해야 할 상대 숫자가 없으면 그 수를 그대로 스택에 쌓는다.
-    while (max_after != min_after)
-    {
-        int new = popNum(&max);
-        pushNum(&after, new);
-        max_after--;
-    }
-    //그 외의 경우 연산해야 할 수가 없을 때까지 더하기 연산
-    while (max_after != 0)
-    {
-        int tmpafter = popNum(&max) + popNum(&min);
-        if (carry)
-        {
-            tmpafter++;
-            carry = false;
-        }
-        if ((tmpafter / 10) >= 1)
-        {
-            carry = true;
-            tmpafter = tmpafter - 10;
-        }
-        pushNum(&after, tmpafter);
-
-        max_after--;
-        min_after--;
-    }
-
-    *result = carry;
-    return after;
-}
-
-pDigit plus(pDigit first, pDigit second)
-{
-    pNum before = NULL;
-    pNum after = NULL;
-    int beforeSize = 0;
-    int afterSize = 0;
-    pDigit result = initializeDigit();
-
-    // first와 second의 size를 int형으로 저장한다.
-    int firstBeforesize = first->beforeSize;
-    int secondBeforesize = second->beforeSize;
-    int firstAftersize = first->afterSize;
-    int secondAftersize = second->afterSize;
-
-    bool carry = false;
-    int resultFlag = 0;
-
-    int maxAftersize;
-    int maxBeforesize;
-
-    //size 비교 후 더하기 연산, 결과값 size 측정
-    if (firstAftersize > secondAftersize)
-    {
-        maxAftersize = firstAftersize;
-        after = afterCal(first->after, second->after, firstAftersize, secondAftersize, &carry);
-        if(firstBeforesize > secondBeforesize)
-        {
-            maxBeforesize = firstBeforesize;
-            before = beforeCal(first->before, second->before, firstBeforesize, secondBeforesize, carry, &resultFlag);
-        }
-        else
-        {
-            maxBeforesize = secondBeforesize;
-            before = beforeCal(second->before, first->before, secondBeforesize, firstBeforesize, carry, &resultFlag);
-        }
-    }
-    else
-    {
-        maxAftersize = secondAftersize;
-        after = afterCal(second->after, first->after, secondAftersize, firstAftersize, &carry);
-        if (firstBeforesize > secondBeforesize)
-        {
-            maxBeforesize = firstBeforesize;
-            before = beforeCal(first->before, second->before, firstBeforesize, secondBeforesize, carry, &resultFlag);
-        }
-        else
-        {
-            maxBeforesize = secondBeforesize;
-            before = beforeCal(second->before, first->before, secondBeforesize, firstBeforesize, carry, &resultFlag);
-        }
-    }
-
-    //결과값 size 설정
-    afterSize = maxAftersize;
-    if (resultFlag)
-    {
-        beforeSize = maxBeforesize + 1;
-    }
-    else
-    {
-        beforeSize = maxBeforesize;
-    }
-
-    pNum resultBefore = NULL;
-    pNum resultAfter = NULL;
-
-    for (int i = 0; i < afterSize; i++)
-    {
-        int new = popNum(&after);
-        pushNum(&resultAfter, new);
-    }
-    for (int i = 0; i < beforeSize; i++)
-    {
-        int new = popNum(&before);
-        pushNum(&resultBefore, new);
-    }
-
-
-    result->beforeSize = beforeSize;
-    result->afterSize = afterSize;
-    result->before = resultBefore;
-    result->after = resultAfter;
-
-    return result;
-}
-pDigit multiply(pDigit first, pDigit second)
+pDigit copyDigit(pDigit digit)
 {
     pDigit result = initializeDigit();
+    pNum tmpBefore = NULL;
+    pNum tmpAfter = NULL;
 
-    return result;
-}
-
-pDigit minus(pDigit first, pDigit second)
-{
-    pDigit result = initializeDigit();
-
-    if(first->beforeSize < second->beforeSize)
+    for(int i = 0; i < digit->beforeSize; i++)
     {
-        pDigit tmp = first;
-        first = second;
-        second = tmp;
+        pushNum(&tmpBefore, popNum(&(digit->before)));
     }
-    else if(first->beforeSize == second->beforeSize)
+    for(int i = 0; i< digit->afterSize; i++)
     {
-        pNum pFirst = first->before, pSecond = second->before;
-        pNum firstTmp = NULL; pNum secondTmp = NULL;
-        int firstNum, secondNum;
-
-        for(int i = 0; i < first->beforeSize; i++)
-        {
-            firstNum = popNum(&(first->before));
-            secondNum = popNum(&(second->before));
-            pushNum(&firstTmp, firstNum);
-            pushNum(&secondTmp, secondNum);
-        }
-        printf("123");
-
-        for(int i = 0; i < first->beforeSize; i++)
-        {
-            pushNum(&(first->before), popNum(&firstTmp));
-            pushNum(&(second->before), popNum(&secondTmp));
-        }
-
-
-        if(firstNum < secondNum)
-        {
-            pDigit tmp = first;
-            first = second;
-            second = tmp;
-        }
+        pushNum(&tmpAfter, popNum(&(digit->after)));
     }
 
-    int beforeSize = max(first->beforeSize, second->beforeSize);
-    int afterSize = max(first->afterSize, second->afterSize);
-    int carry=0;
-    int a, b;
-    pNum pfirst, psecond,presult;
-
-    pfirst = first->after;
-    psecond = second->after;
-    presult = result->after;
-
-    for (int i = 0; i < afterSize; i++) {
-        if (afterSize - i > first->afterSize) {
-            a = 0;
-        }
-        else {
-            a = pfirst->num;
-            pfirst = pfirst->next;
-        }
-
-        if (afterSize - i > second->afterSize) {
-            b = 0;
-        }
-        else {
-            b = psecond->num;
-            psecond = psecond->next;
-        }
-
-        if (a - carry < b) {
-            a = 10 + a - carry - b;
-            carry = 1;
-        }
-        else {
-            a = a - carry - b;
-            carry = 0;
-        }
-
-        if (presult == NULL) {
-            presult = malloc( sizeof( Num ) );
-            presult->num = a;
-            presult->next = NULL;
-            result->after = presult;
-        }
-        else {
-            presult->next = malloc( sizeof( Num ) );
-            presult->next->num = a;
-            presult->next->next = NULL;
-            presult = presult->next;
-        }
-        result->afterSize++;
+    for(int i = 0; i < digit->beforeSize; i++)
+    {
+        int tmp = popNum(&tmpBefore);
+        pushNum(&(digit->before), tmp);
+        pushNum(&(result->before), tmp);
     }
 
-    pfirst = first->before;
-    psecond = second->before;
-    presult = result->before;
-
-    for (int i = 0; i < beforeSize; i++) {
-        if (i >= first->beforeSize) {
-            a = 0;
-        }
-        else {
-            a = pfirst->num;
-            pfirst = pfirst->next;
-        }
-
-        if (i >= second->beforeSize) {
-            b = 0;
-        }
-        else {
-            b = psecond->num;
-            psecond = psecond->next;
-        }
-
-        if (a - carry < b) {
-            a = 10 + a - carry - b;
-            carry = 1;
-        }
-        else {
-            a = a - carry - b;
-            carry = 0;
-        }
-
-        if (presult == NULL) {
-            presult = malloc( sizeof( Num ) );
-            presult->num = a;
-            presult->next = NULL;
-            result->before = presult;
-        }
-        else {
-            presult->next = malloc( sizeof( Num ) );
-            presult->next->num = a;
-            presult->next->next = NULL;
-            presult = presult->next;
-        }
-        result->beforeSize++;
+    for(int i = 0; i < digit->afterSize; i++)
+    {
+        int tmp = popNum(&tmpAfter);
+        pushNum(&(digit->after), tmp);
+        pushNum(&(result->after), tmp);
     }
 
-    int end = result->afterSize;
-    for (int i = 0; i < end; i++) {
-        if (result->after->num == 0) {
-            pNum temp = result->after->next;
-            free( result->after );
-            result->after = temp;
-            result->afterSize--;
-        }
-        else {
-            break;
-        }
-    }
-
-    end = result->beforeSize;
-    pNum lastNonZero = NULL;
-    pNum cur = result->before;
-    for (int i = 0; i < end; i++) {
-        if (cur != NULL && cur->num != 0) {
-            lastNonZero = cur;
-        }
-        cur = cur->next;
-    }
-
-    while (lastNonZero != NULL) {
-        pNum temp = lastNonZero->next;
-        lastNonZero->next = NULL;
-        if (lastNonZero->num == 0) {
-            free( lastNonZero );
-            result->beforeSize--;
-        }
-        lastNonZero = temp;
-    }
-
-    //    printf("\n first beforeSize : %d, secondSize : %d \n", first->beforeSize, first->afterSize);
-    //    printf(" second beforeSize : %d, secondSize : %d \n", second->beforeSize, second->afterSize);
-    return result;
+    result->beforeSize = digit->beforeSize;
+    result->afterSize = digit->afterSize;
+    return  result;
 }
 
-pDigit divide(pDigit first, pDigit second)
-{
-//    printf("\n first beforeSize : %d, secondSize : %d \n", first->beforeSize, first->afterSize);
-//    printf(" second beforeSize : %d, secondSize : %d \n", second->beforeSize, second->afterSize);
-    return first;
-}
+
 
 void makePostfix(char* str, pList pList, pOperator Operator)
 {

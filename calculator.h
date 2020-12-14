@@ -1,7 +1,10 @@
+#include <stdlib.h>
+#include <stdio.h>
+
 #define bool   _Bool
 #define false  0
 #define true   1
-#include <stdlib.h>
+
 typedef struct expression
 {
     int num;
@@ -55,17 +58,10 @@ pOperator getOperator(char op);
 int pushOperator(pOperator* top, char op);
 inline int emptyOperator(pOperator top);
 char popOperator(pOperator* top);
-void insertExpression(pExpression* head, int num);
 void initList(pList list);
 void addExpression(pList list, int num);
-void viewAll(pList list);
 void makePostfix(char* str, pList list, pOperator topOperator);
 pDigit makeExpression(pList list);
-pDigit multiply(pDigit first, pDigit second);
-pDigit plus(pDigit first, pDigit second);
-pDigit minus(pDigit first, pDigit second);
-pDigit divide(pDigit first, pDigit second);
-void mul(int cnt,int x,int y,int f_size,int s_size);
-void up(int x,int y,int tmp);
-void check(int front, int back,int total_size);
 void returnValue(pDigit digit);
+pDigit initializeDigit();
+pDigit copyDigit(pDigit digit);

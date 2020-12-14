@@ -1,11 +1,10 @@
 #include "calculator.h"
-#include <stdio.h>
 
 void returnValue(pDigit digit)
 {
     pNum resultBefore = NULL;
     pNum resultAfter = NULL;
-
+//    printf("before : %d, after : %d", digit->beforeSize, digit->afterSize);
     for(int i = 0; i < digit->beforeSize; i++)
     {
         pushNum(&resultBefore, popNum(&(digit->before)));
@@ -30,7 +29,6 @@ void returnValue(pDigit digit)
             printf("%d", popNum(&resultBefore));
         }
         printf(".");
-
         for(int j = 0; j < digit->afterSize; j++)
         {
             printf("%d", popNum(&resultAfter));
