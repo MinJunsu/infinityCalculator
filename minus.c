@@ -2,6 +2,8 @@
 
 pDigit minus(pDigit first, pDigit second)
 {
+    bool flag = false;
+    bool positive = true;
     pDigit result = initializeDigit();
 
     if(first->beforeSize < second->beforeSize)
@@ -9,7 +11,9 @@ pDigit minus(pDigit first, pDigit second)
         pDigit tmp = first;
         first = second;
         second = tmp;
+        positive = false;
     }
+
     else if(first->beforeSize == second->beforeSize)
     {
         pNum pFirst = first->before, pSecond = second->before;
@@ -20,24 +24,63 @@ pDigit minus(pDigit first, pDigit second)
         {
             firstNum = popNum(&(first->before));
             secondNum = popNum(&(second->before));
+            if(firstNum < secondNum)
+            {
+                flag = true;
+            }
+            else if(firstNum > secondNum)
+            {
+                flag = false;
+            }
             pushNum(&firstTmp, firstNum);
             pushNum(&secondTmp, secondNum);
         }
-
         for(int i = 0; i < first->beforeSize; i++)
         {
             pushNum(&(first->before), popNum(&firstTmp));
             pushNum(&(second->before), popNum(&secondTmp));
         }
 
+        if(!flag)
+        {
+            firstTmp = NULL; secondTmp = NULL;
+            for(int i = 0; i < first->afterSize; i++)
+            {
+                firstNum = popNum(&(first->after));
+                secondNum = popNum(&(second->after));
+                if(firstNum < secondNum)
+                {
+                    flag = true;
+                }
+                pushNum(&firstTmp, firstNum);
+                pushNum(&secondTmp, secondNum);
+            }
+            for(int i = 0; i < first->afterSize; i++)
+            {
+                pushNum(&(first->after), popNum(&firstTmp));
+                pushNum(&(second->after), popNum(&secondTmp));
+            }
+        }
 
-        if(firstNum < secondNum)
+        if(flag)
         {
             pDigit tmp = first;
             first = second;
             second = tmp;
+            positive = false;
         }
     }
+
+
+//    printf("first: ");
+//    returnValue(copyDigit(first));
+//    printf(", second: ");
+//    returnValue(copyDigit(second));
+//    printf("\n");
+//
+//    printf("first b : %d, first a: %d", first->beforeSize, first->afterSize);
+//    printf(" second b : %d, second a: %d\n", second->beforeSize, second->afterSize);
+
 
     int beforeSize = max(first->beforeSize, second->beforeSize);
     int afterSize = max(first->afterSize, second->afterSize);
@@ -81,7 +124,8 @@ pDigit minus(pDigit first, pDigit second)
             presult->next = NULL;
             result->after = presult;
         }
-        else {
+        else
+        {
             presult->next = malloc( sizeof( Num ) );
             presult->next->num = a;
             presult->next->next = NULL;
@@ -94,7 +138,8 @@ pDigit minus(pDigit first, pDigit second)
     psecond = second->before;
     presult = result->before;
 
-    for (int i = 0; i < beforeSize; i++) {
+    for (int i = 0; i < beforeSize; i++)
+    {
         if (i >= first->beforeSize) {
             a = 0;
         }
@@ -120,7 +165,8 @@ pDigit minus(pDigit first, pDigit second)
             carry = 0;
         }
 
-        if (presult == NULL) {
+        if (presult == NULL)
+        {
             presult = malloc( sizeof( Num ) );
             presult->num = a;
             presult->next = NULL;
@@ -148,27 +194,63 @@ pDigit minus(pDigit first, pDigit second)
         }
     }
 
-    end = result->beforeSize;
-    pNum lastNonZero = NULL;
-    pNum cur = result->before;
-    for (int i = 0; i < end; i++) {
-        if (cur != NULL && cur->num != 0) {
-            lastNonZero = cur;
-        }
-        cur = cur->next;
-    }
+//    end = result->beforeSize;
+//    pNum lastNonZero = NULL;
+//    pNum cur = result->before;
+//    for (int i = 0; i < end; i++)
+//    {
+//        if (cur != NULL && cur->num != 0)
+//        {
+//            lastNonZero = cur;
+//        }
+//        cur = cur->next;
+//    }
+//
+//    while (lastNonZero != NULL) {
+//        pNum temp = lastNonZero->next;
+//        lastNonZero->next = NULL;
+//        if (lastNonZero->num == 0) {
+//            free(lastNonZero);
+//            result->beforeSize--;
+//        }
+//        lastNonZero = temp;
+//    }
 
-    while (lastNonZero != NULL) {
-        pNum temp = lastNonZero->next;
-        lastNonZero->next = NULL;
-        if (lastNonZero->num == 0) {
-            free( lastNonZero );
-            result->beforeSize--;
-        }
-        lastNonZero = temp;
+    pNum tmp = NULL;
+    int tmpBeforeSize = result->beforeSize;
+    for(int i = 0; i < result->beforeSize; i++)
+    {
+        pushNum(&tmp, popNum(&(result->before)));
     }
+    if(positive)
+    {
+        result->positive = true;
+    }
+    else
+    {
+        result->positive = false;
+    }
+    for(int i = 0; i < result->beforeSize; i++)
+    {
 
-    //    printf("\n first beforeSize : %d, secondSize : %d \n", first->beforeSize, first->afterSize);
-    //    printf(" second beforeSize : %d, secondSize : %d \n", second->beforeSize, second->afterSize);
+        int tmpNum = popNum(&tmp);
+        if(i == (result->beforeSize - 1))
+        {
+           pushNum(&(result->before), tmpNum);
+        }
+        else
+        {
+            if(tmpNum != 0)
+            {
+                pushNum(&(result->before), tmpNum);
+            }
+            else
+            {
+                tmpBeforeSize--;
+            }
+        }
+    }
+    result->beforeSize = tmpBeforeSize;
+
     return result;
 }

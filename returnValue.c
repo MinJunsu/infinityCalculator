@@ -5,6 +5,10 @@ void returnValue(pDigit digit)
     pNum resultBefore = NULL;
     pNum resultAfter = NULL;
 //    printf("before : %d, after : %d", digit->beforeSize, digit->afterSize);
+    if(!(digit->positive))
+    {
+        printf("-");
+    }
     for(int i = 0; i < digit->beforeSize; i++)
     {
         pushNum(&resultBefore, popNum(&(digit->before)));

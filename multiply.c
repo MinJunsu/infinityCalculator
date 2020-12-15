@@ -5,8 +5,6 @@ pDigit multiply(pDigit first, pDigit second)
     pDigit sum = initializeDigit();
     for(int i = 0; i < second->afterSize; i++)
     {
-//        returnValue(mul(copyDigit(first), popNum(&(second->after)), -(second->afterSize - i)));
-//        sum = plus(copyDigit(mul(copyDigit(first), popNum(&(second->after)), -(second->afterSize - i))), copyDigit(sum));
         sum = plus(mul(copyDigit(first), popNum(&(second->after)), -(second->afterSize - i)), copyDigit(sum));
 //        returnValue(copyDigit(sum));
 //        printf("\n");
@@ -16,9 +14,9 @@ pDigit multiply(pDigit first, pDigit second)
 //        printf("dd : %d\n", i);
         sum = plus(mul(copyDigit(first), popNum(&(second->before)), i), copyDigit(sum));
 //        returnValue(copyDigit(sum));
+//        printf("\n");
 //        sum = plus(mul(copyDigit(first), popNum(&(second->before)), i), sum);
     }
-
     return sum;
 }
 
@@ -103,8 +101,14 @@ pDigit mul(pDigit digit, int x, int under)
         digit->afterSize += abs(under);
     }
 
-    digit->beforeSize < 0 ? 0 : digit->beforeSize;
-    digit->afterSize < 0 ? 0 : digit->afterSize;
+    if(digit->beforeSize < 0)
+    {
+        digit->beforeSize = 0;
+    }
+    if(digit->afterSize < 0)
+    {
+        digit->afterSize = 0;
+    }
 
 //    printf("\n\nbefore : %d, after : %d\n", digit->beforeSize, digit->afterSize);
 //    printf("\n\ndigit: ");

@@ -32,6 +32,7 @@ typedef struct num
 
 typedef struct digit
 {
+    bool positive;
     int beforeSize;
     int afterSize;
     struct num* before;
@@ -65,3 +66,4 @@ pDigit makeExpression(pList list);
 void returnValue(pDigit digit);
 pDigit initializeDigit();
 pDigit copyDigit(pDigit digit);
+void viewAll(pList list);
