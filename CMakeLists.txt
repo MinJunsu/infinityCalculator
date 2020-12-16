@@ -12,4 +12,6 @@ add_executable(infinityCalculator
         minus.c
         plus.c
         calculate.h
-        divide.c)
+        divide.c
+        fileReader.c
+)

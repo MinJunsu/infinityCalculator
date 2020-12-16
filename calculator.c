@@ -27,7 +27,7 @@ int pushNum(pNum* top, int num)
     return 0;
 }
 
-inline int emptyNum(pNum top)
+int emptyNum(pNum top)
 {
     return (top == NULL);
 }
@@ -71,7 +71,7 @@ int pushOperand(pOperand* top, pDigit digit)
     return 0;
 }
 
-inline int emptyOperand(pOperand top)
+int emptyOperand(pOperand top)
 {
     return (top == NULL);
 }
@@ -127,7 +127,7 @@ int pushOperator(pOperator* top, char op)
     return 0;
 }
 
-inline int emptyOperator(pOperator top)
+int emptyOperator(pOperator top)
 {
     return (top == NULL);
 }
@@ -180,8 +180,11 @@ pDigit initializeDigit()
     tmp->beforeSize = 0;
     tmp->after = NULL;
     tmp->afterSize = 0;
+    tmp->positive = true;
     return tmp;
 }
+
+
 
 pDigit makeExpression(pList list)
 {
@@ -237,6 +240,10 @@ pDigit makeExpression(pList list)
         {
             pDigit secondDigit = popOperand(&operand);
             pDigit firstDigit = popOperand(&operand);
+//            returnValue(copyDigit(firstDigit));
+//            printf(" ");
+//            returnValue(copyDigit(secondDigit));
+//            printf("   %C\n", tmp);
             pDigit tmpDigit;
             switch (tmp)
             {
@@ -273,6 +280,7 @@ pDigit makeExpression(pList list)
                     break;
 
                 case 45:
+//                    printf("%d", isBig(firstDigit, secondDigit));
                     if(!(secondDigit->positive))
                     {
                         secondDigit->positive = true;
@@ -343,6 +351,7 @@ pDigit copyDigit(pDigit digit)
 
     result->beforeSize = digit->beforeSize;
     result->afterSize = digit->afterSize;
+    result->positive = digit->positive;
     return  result;
 }
 
@@ -357,8 +366,7 @@ void makePostfix(char* str, pList pList, pOperator Operator)
     while(1)
     {
         int flag = 0;
-
-        if(str[i] == NULL)
+        if(str[i] == '\0')
         {
             while(!emptyOperator(topOperator))
             {
@@ -397,7 +405,7 @@ void makePostfix(char* str, pList pList, pOperator Operator)
             else
             {
                 char tmp = popOperator(&topOperator);
-                if(str[i] == 41) // )°¡ ³ª¿Ã ¶§, ¿ì¼± ¼øÀ§ 1¹ø
+                if(str[i] == 41) // )ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, ï¿½ì¼± ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½
                 {
                     if(tmp != 40)
                     {
@@ -413,7 +421,7 @@ void makePostfix(char* str, pList pList, pOperator Operator)
                         pushOperator(&topOperator, 42);
                     }
                 }
-                else if((str[i] == 42) || (str[i] == 47)) // * / ³ª¿Ã ¶§, ¿ì¼± ¼øÀ§ 2¹ø
+                else if((str[i] == 42) || (str[i] == 47)) // * / ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, ï¿½ì¼± ï¿½ï¿½ï¿½ï¿½ 2ï¿½ï¿½
                 {
                     if((tmp == 43) || (tmp == 45) || (tmp == 40))
                     {
@@ -426,7 +434,7 @@ void makePostfix(char* str, pList pList, pOperator Operator)
                         pushOperator(&topOperator, str[i]);
                     }
                 }
-                else if((str[i] == 43) || (str[i] == 45)) // + - ³ª¿Ã ¶§, ¿ì¼± ¼øÀ§ 3¹ø
+                else if((str[i] == 43) || (str[i] == 45)) // + - ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, ï¿½ì¼± ï¿½ï¿½ï¿½ï¿½ 3ï¿½ï¿½
                 {
                     if((str[i-1] == 40) && (str[i] == 45))
                     {
@@ -478,4 +486,99 @@ void makePostfix(char* str, pList pList, pOperator Operator)
         }
         i++;
     }
+}
+
+bool isBig(pDigit first, pDigit second)
+{
+    bool flag = false;
+
+    if(first->beforeSize < second->beforeSize)
+    {
+        flag = true;
+    }
+    else if(first->beforeSize == second-> beforeSize)
+    {
+        pNum firstTmp = NULL; pNum secondTmp = NULL;
+        int firstNum, secondNum;
+        if(first->afterSize > second->afterSize)
+        {
+            flag = false;
+            for(int i = 0; i < (first->afterSize - second->afterSize); i++)
+            {
+                pushNum(&firstTmp, popNum(&(first->after)));
+            }
+        }
+        else
+        {
+            flag = true;
+            for(int i = 0; i < (second->afterSize - first->afterSize); i++)
+            {
+                pushNum(&second, popNum(&(second->after)));
+            }
+        }
+
+        for(int i = 0; i < first->afterSize; i++)
+        {
+            firstNum = popNum(&(first->after));
+            secondNum = popNum(&(second->after));
+            if(firstNum < secondNum)
+            {
+                flag = true;
+            }
+            else if(firstNum > secondNum)
+            {
+                flag = false;
+            }
+            pushNum(&firstTmp, firstNum);
+            pushNum(&secondTmp, secondNum);
+        }
+
+        if(first->afterSize > second->afterSize)
+        {
+            for(int i = 0; i < (first->afterSize - second->afterSize); i++)
+            {
+                pushNum(&firstTmp, popNum(&(first->after)));
+            }
+            for(int i = 0; i < second->afterSize; i++)
+            {
+                pushNum(&(first->after), popNum(&firstTmp));
+                pushNum(&(second->after), popNum(&secondTmp));
+            }
+        }
+        else
+        {
+            for(int i = 0; i < (second->afterSize - first->afterSize); i++)
+            {
+                pushNum(&second, popNum(&(second->after)));
+            }
+            for(int i = 0; i < first->afterSize; i++)
+            {
+                pushNum(&(first->after), popNum(&firstTmp));
+                pushNum(&(second->after), popNum(&secondTmp));
+            }
+        }
+
+        firstTmp = NULL; secondTmp = NULL;
+        for(int i = 0; i < first->beforeSize; i++)
+        {
+            firstNum = popNum(&(first->before));
+            secondNum = popNum(&(second->before));
+            if(firstNum < secondNum)
+            {
+                flag = true;
+            }
+            else if(firstNum > secondNum)
+            {
+                flag = false;
+            }
+            pushNum(&firstTmp, firstNum);
+            pushNum(&secondTmp, secondNum);
+        }
+        for(int i = 0; i < first->beforeSize; i++)
+        {
+            pushNum(&(first->before), popNum(&firstTmp));
+            pushNum(&(second->before), popNum(&secondTmp));
+        }
+    }
+    return flag;
 }

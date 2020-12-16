@@ -47,19 +47,19 @@ typedef struct operand
 
 
 
+void initList(pList list);
 pNum getNum(int num);
 int pushNum(pNum* top, int op);
-inline int emptyNum(pNum top);
+int emptyNum(pNum top);
 int popNum(pNum* top);
 pOperand getOperand(pDigit digit);
 int pushOperand(pOperand* top, pDigit digit);
-inline int emptyOperand(pOperand top);
+int emptyOperand(pOperand top);
 pDigit popOperand(pOperand* top);
 pOperator getOperator(char op);
 int pushOperator(pOperator* top, char op);
-inline int emptyOperator(pOperator top);
+int emptyOperator(pOperator top);
 char popOperator(pOperator* top);
-void initList(pList list);
 void addExpression(pList list, int num);
 void makePostfix(char* str, pList list, pOperator topOperator);
 pDigit makeExpression(pList list);
@@ -67,3 +67,5 @@ void returnValue(pDigit digit);
 pDigit initializeDigit();
 pDigit copyDigit(pDigit digit);
 void viewAll(pList list);
+char* openFile(FILE* ifp);
+bool isBig(pDigit first, pDigit second);

@@ -44,14 +44,14 @@ pNum afterCal(pNum max, pNum min, int max_after, int min_after, bool* result)
 {
     pNum after = NULL;
     bool carry = false;
-    //¿¬»êÇØ¾ß ÇÒ »ó´ë ¼ýÀÚ°¡ ¾øÀ¸¸é ±× ¼ö¸¦ ±×´ë·Î ½ºÅÃ¿¡ ½×´Â´Ù.
+    //ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×´ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¿ï¿½ ï¿½×´Â´ï¿½.
     while (max_after != min_after)
     {
         int new = popNum(&max);
         pushNum(&after, new);
         max_after--;
     }
-    //±× ¿ÜÀÇ °æ¿ì ¿¬»êÇØ¾ß ÇÒ ¼ö°¡ ¾øÀ» ¶§±îÁö ´õÇÏ±â ¿¬»ê
+    //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½
     while (max_after != 0)
     {
         int tmpafter = popNum(&max) + popNum(&min);
@@ -82,14 +82,8 @@ pDigit plus(pDigit first, pDigit second)
     int beforeSize = 0;
     int afterSize = 0;
     pDigit result = initializeDigit();
-    if(first->positive)
-    {
-        result->positive = true;
-    }
-    else
-    {
-        result->positive = false;
-    }
+
+    result->positive = true;
 
 //    printf("first: ");
 //    returnValue(copyDigit(first));
@@ -120,7 +114,7 @@ pDigit plus(pDigit first, pDigit second)
     int maxAftersize;
     int maxBeforesize;
 
-    //size ºñ±³ ÈÄ ´õÇÏ±â ¿¬»ê, °á°ú°ª size ÃøÁ¤
+    //size ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ size ï¿½ï¿½ï¿½ï¿½
     if (firstAftersize > secondAftersize)
     {
         maxAftersize = firstAftersize;
@@ -152,7 +146,7 @@ pDigit plus(pDigit first, pDigit second)
         }
     }
 
-    //°á°ú°ª size ¼³Á¤
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ size ï¿½ï¿½ï¿½ï¿½
     afterSize = maxAftersize;
     if (resultFlag)
     {

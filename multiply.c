@@ -2,6 +2,13 @@
 
 pDigit multiply(pDigit first, pDigit second)
 {
+    if((first->beforeSize + first->afterSize) < (second->beforeSize + second->afterSize))
+    {
+        pDigit tmp = first;
+        first = second;
+        second = tmp;
+    }
+
     pDigit sum = initializeDigit();
     for(int i = 0; i < second->afterSize; i++)
     {
@@ -14,6 +21,7 @@ pDigit multiply(pDigit first, pDigit second)
 //        printf("dd : %d\n", i);
         sum = plus(mul(copyDigit(first), popNum(&(second->before)), i), copyDigit(sum));
 //        returnValue(copyDigit(sum));
+//        printf("\n");
 //        printf("\n");
 //        sum = plus(mul(copyDigit(first), popNum(&(second->before)), i), sum);
     }

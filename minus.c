@@ -6,70 +6,12 @@ pDigit minus(pDigit first, pDigit second)
     bool positive = true;
     pDigit result = initializeDigit();
 
-    if(first->beforeSize < second->beforeSize)
+    if(isBig(first, second))
     {
         pDigit tmp = first;
         first = second;
         second = tmp;
         positive = false;
-    }
-
-    else if(first->beforeSize == second->beforeSize)
-    {
-        pNum pFirst = first->before, pSecond = second->before;
-        pNum firstTmp = NULL; pNum secondTmp = NULL;
-        int firstNum, secondNum;
-
-        for(int i = 0; i < first->beforeSize; i++)
-        {
-            firstNum = popNum(&(first->before));
-            secondNum = popNum(&(second->before));
-            if(firstNum < secondNum)
-            {
-                flag = true;
-            }
-            else if(firstNum > secondNum)
-            {
-                flag = false;
-            }
-            pushNum(&firstTmp, firstNum);
-            pushNum(&secondTmp, secondNum);
-        }
-
-        for(int i = 0; i < first->beforeSize; i++)
-        {
-            pushNum(&(first->before), popNum(&firstTmp));
-            pushNum(&(second->before), popNum(&secondTmp));
-        }
-
-        if(!flag)
-        {
-            firstTmp = NULL; secondTmp = NULL;
-            for(int i = 0; i < first->afterSize; i++)
-            {
-                firstNum = popNum(&(first->after));
-                secondNum = popNum(&(second->after));
-                if(firstNum < secondNum)
-                {
-                    flag = true;
-                }
-                pushNum(&firstTmp, firstNum);
-                pushNum(&secondTmp, secondNum);
-            }
-            for(int i = 0; i < first->afterSize; i++)
-            {
-                pushNum(&(first->after), popNum(&firstTmp));
-                pushNum(&(second->after), popNum(&secondTmp));
-            }
-        }
-
-        if(flag)
-        {
-            pDigit tmp = first;
-            first = second;
-            second = tmp;
-            positive = false;
-        }
     }
 
 
@@ -82,9 +24,10 @@ pDigit minus(pDigit first, pDigit second)
 //    printf("first b : %d, first a: %d", first->beforeSize, first->afterSize);
 //    printf(" second b : %d, second a: %d\n", second->beforeSize, second->afterSize);
 
-
-    int beforeSize = max(first->beforeSize, second->beforeSize);
-    int afterSize = max(first->afterSize, second->afterSize);
+	int beforeSize = first->beforeSize > second->beforeSize ? first->beforeSize : second->beforeSize;
+	int afterSize  = first->afterSize > second->afterSize ? first->afterSize : second->afterSize;
+    // int beforeSize = max(first->beforeSize, second->beforeSize);
+    // int afterSize = max(first->afterSize, second->afterSize);
     int carry=0;
     int a, b;
     pNum pfirst, psecond,presult;
@@ -198,6 +141,7 @@ pDigit minus(pDigit first, pDigit second)
         }
     }
 
+
 //    end = result->beforeSize;
 //    pNum lastNonZero = NULL;
 //    pNum cur = result->before;
@@ -221,22 +165,14 @@ pDigit minus(pDigit first, pDigit second)
 //    }
 
     pNum tmp = NULL;
+    bool tmpFlag = false;
     int tmpBeforeSize = result->beforeSize;
     for(int i = 0; i < result->beforeSize; i++)
     {
         pushNum(&tmp, popNum(&(result->before)));
     }
-    if(positive)
-    {
-        result->positive = true;
-    }
-    else
-    {
-        result->positive = false;
-    }
     for(int i = 0; i < result->beforeSize; i++)
     {
-
         int tmpNum = popNum(&tmp);
         if(i == (result->beforeSize - 1))
         {
@@ -247,14 +183,22 @@ pDigit minus(pDigit first, pDigit second)
             if(tmpNum != 0)
             {
                 pushNum(&(result->before), tmpNum);
+                tmpFlag = true;
             }
             else
             {
-                tmpBeforeSize--;
+                if(tmpFlag)
+                {
+                    pushNum(&(result->before), tmpNum);
+                }
+                else
+                {
+                    tmpBeforeSize--;
+                }
             }
         }
     }
     result->beforeSize = tmpBeforeSize;
-
+    result->positive = true;
     return result;
 }
