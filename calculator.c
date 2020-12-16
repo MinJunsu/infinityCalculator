@@ -189,6 +189,7 @@ pDigit makeExpression(pList list)
     pOperand operand = NULL;
     pDigit digit = initializeDigit();
     pNum num = NULL;
+    bool digitFlag = true;
 
     int lengthFlag = 0;
     int length[] = { 0, 0 };
@@ -199,6 +200,10 @@ pDigit makeExpression(pList list)
         {
             pushNum(&num, tmp);
             length[lengthFlag]++;
+        }
+        else if(tmp == 10)
+        {
+            digitFlag = false;
         }
         else if(tmp == 46)
         {
@@ -213,17 +218,18 @@ pDigit makeExpression(pList list)
             {
                 digit->beforeSize = length[0];
                 digit->before = num;
-                digit->positive = true;
+                digit->positive = digitFlag;
             }
             else
             {
                 digit->afterSize = length[1];
                 digit->after = num;
-                digit->positive = true;
+                digit->positive = digitFlag;
             }
             length[0] = 0;
             length[1] = 0;
             lengthFlag = 0;
+            digitFlag = true;
             pushOperand(&operand, digit);
             digit = initializeDigit();
         }
@@ -396,11 +402,10 @@ void makePostfix(char* str, pList pList, pOperator Operator)
                     if(tmp != 40)
                     {
                         addExpression(&list, tmp);
-                    }
-
-                    while(popOperator(&topOperator) != 40)
-                    {
-                        addExpression(&list, popOperator(&topOperator));
+                        while(popOperator(&topOperator) != 40)
+                        {
+                            addExpression(&list, popOperator(&topOperator));
+                        }
                     }
 
                     if((48 <= str[i+1] && str[i+1] <= 57))
@@ -423,15 +428,24 @@ void makePostfix(char* str, pList pList, pOperator Operator)
                 }
                 else if((str[i] == 43) || (str[i] == 45)) // + - 나올 때, 우선 순위 3번
                 {
-                    if(tmp == 40)
+                    if((str[i-1] == 40) && (str[i] == 45))
                     {
+                        addExpression(&list, 10);
                         pushOperator(&topOperator, tmp);
-                        pushOperator(&topOperator, str[i]);
                     }
                     else
                     {
-                        addExpression(&list, tmp);
-                        pushOperator(&topOperator, str[i]);
+                        if(tmp == 40)
+                        {
+                            pushOperator(&topOperator, tmp);
+                            pushOperator(&topOperator, str[i]);
+                        }
+                        else
+                        {
+//                            printf("%C", tmp);
+                            addExpression(&list, tmp);
+                            pushOperator(&topOperator, str[i]);
+                        }
                     }
                 }
                 else

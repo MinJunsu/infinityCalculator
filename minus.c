@@ -35,6 +35,7 @@ pDigit minus(pDigit first, pDigit second)
             pushNum(&firstTmp, firstNum);
             pushNum(&secondTmp, secondNum);
         }
+
         for(int i = 0; i < first->beforeSize; i++)
         {
             pushNum(&(first->before), popNum(&firstTmp));
@@ -182,14 +183,17 @@ pDigit minus(pDigit first, pDigit second)
     }
 
     int end = result->afterSize;
-    for (int i = 0; i < end; i++) {
-        if (result->after->num == 0) {
+    for (int i = 0; i < end; i++)
+    {
+        if (result->after->num == 0)
+        {
             pNum temp = result->after->next;
             free( result->after );
             result->after = temp;
             result->afterSize--;
         }
-        else {
+        else
+        {
             break;
         }
     }
