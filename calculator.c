@@ -4,6 +4,7 @@
 
 pNum getNum(int num)
 {
+    // Num 스택을 초기화 해줌
     Num nullNode = { 0, NULL };
     pNum tmp = malloc(sizeof(Num));
     if(tmp)
@@ -188,26 +189,34 @@ pDigit initializeDigit()
 
 pDigit makeExpression(pList list)
 {
+    // Double Linked List 로 변환된 입력값을 후위연산식으로 변경하는 함수
     pExpression seek = list->head->next;
     pOperand operand = NULL;
+    // digit을 우선 0으로 초기화 해줌.
     pDigit digit = initializeDigit();
     pNum num = NULL;
     bool digitFlag = true;
 
+    // 소수점 기준 앞자리와 뒤자리를 구분하기 위한 타입
     int lengthFlag = 0;
+    // 소수점 기준으로 앞자리와 뒤자리의 길이를 저장하는 배열
     int length[] = { 0, 0 };
     while(seek != list->tail)
     {
+        // tmp 에는 문자 하나가 들어온다.
         int tmp = seek->num;
+        // 만약 tmp 가 0과 9 사이에 있다면-> 숫자라면 Num에 저장하고, Flag에 맞는 자리수 배열을 하나 늘린다.
         if(0 <= tmp && tmp <= 9)
         {
             pushNum(&num, tmp);
             length[lengthFlag]++;
         }
+        // 만약 tmp가 10이라면 입력값이 음수라는 의미로 digitFlag 를 false로 바꾼다.
         else if(tmp == 10)
         {
             digitFlag = false;
         }
+        // 만약 tmp가 46이라면 소수점이 들어왔다는 의미이므로 digit의 앞 수 및 자리수를 저장해주고 lengthFlag를 변경해준다.
         else if(tmp == 46)
         {
             digit->beforeSize = length[0];
@@ -215,6 +224,7 @@ pDigit makeExpression(pList list)
             num = NULL;
             lengthFlag = 1;
         }
+        // 만약 tmp가 -1이라면 숫자가 끝났다는 의미로 앞자리수가 0이라다면 정수란 의미로 앞자리에 0이 아니라면 뒷자리에 숫자를 정의해주고 각각의 수를 초기화 해준다. 그리고 피연산자 스택에 넣는다.
         else if(tmp == -1)
         {
             if(digit->beforeSize == 0)
@@ -236,8 +246,10 @@ pDigit makeExpression(pList list)
             pushOperand(&operand, digit);
             digit = initializeDigit();
         }
+        // 만약 input한 숫자가 연산자에 맞는 숫자라면 실행됨.
         else
         {
+            // 만약 연산자가 들어온다면 우선 피연산자 스택에서 pop을 해준다.
             pDigit secondDigit = popOperand(&operand);
             pDigit firstDigit = popOperand(&operand);
 //            returnValue(copyDigit(firstDigit));
@@ -247,12 +259,15 @@ pDigit makeExpression(pList list)
             pDigit tmpDigit;
             switch (tmp)
             {
+                // 만약에 피연산자가 곱셈 이라면
                 case 42:
                     tmpDigit = multiply(firstDigit, secondDigit);
+                    // 위에서 곱셈을 정의하고 만약 두 수의 positive 의 합이 1이라면 두 부호가 다르다는 의미로 음수로 결과값을 음수로 처리한다.
                     if((firstDigit->positive + secondDigit->positive) == 1)
                     {
                         tmpDigit->positive = false;
                     }
+                    // 아니라면 결과값을 양수로 처리한다.
                     else
                     {
                         tmpDigit->positive = true;
@@ -260,36 +275,52 @@ pDigit makeExpression(pList list)
                     pushOperand(&operand, tmpDigit);
                     break;
 
+                // 만약 피연산자가 더하기라면
                 case 43:
+                    // 두 부호가 다르다는 의미
                     if((firstDigit->positive + secondDigit->positive) == 1)
                     {
                         if(firstDigit->positive)
                         {
+                            // 앞수가 양수 뒷 수가 음수면 앞수 minus 뒤수 처리를 한다.
                             tmpDigit = minus(firstDigit, secondDigit);
                         }
                         else
                         {
+                            // 앞수가 음수 뒷 수가 양수면 뒤수 minus 앞수 처리를 한다.
                             tmpDigit = minus(secondDigit, firstDigit);
                         }
                     }
                     else
                     {
                         tmpDigit = plus(firstDigit, secondDigit);
+                        if(firstDigit->positive)
+                        {
+                            // 앞수가 양수 뒤수가 양수면 더하기로 처리한다.
+                            tmpDigit->positive = true;
+                        }
+                        else
+                        {
+                            // 앞수가 음수 뒤수가 음수면 두 수를 더하고 음수로 처리한다.
+                            tmpDigit->positive = false;
+                        }
                     }
                     pushOperand(&operand, tmpDigit);
                     break;
 
                 case 45:
 //                    printf("%d", isBig(firstDigit, secondDigit));
+                    // 뒤 수가 음수면
                     if(!(secondDigit->positive))
                     {
-                        secondDigit->positive = true;
                         if(firstDigit->positive)
                         {
+                            // 앞 수가 양수고 뒤 수가 음수면 두 수 더한다.
                             tmpDigit = plus(firstDigit, secondDigit);
                         }
                         else
                         {
+                            // 앞 수가 음수고, 뒤 수가 양수면 뒤 수에서 앞수를 빼준다ㄴ
                             tmpDigit = minus(secondDigit, firstDigit);
                         }
                     }
@@ -297,10 +328,12 @@ pDigit makeExpression(pList list)
                     {
                         if(firstDigit->positive)
                         {
+                            // 만약 앞 수가 양수고, 뒤 수가 양수면 두 수를 바로 빼준다.
                             tmpDigit = minus(firstDigit, secondDigit);
                         }
                         else
                         {
+                            // 만약 앞 수가 음수고, 뒤 수가 양수면 두 수를 더해주고 결과값을 음수 처리한다.
                             tmpDigit = plus(firstDigit, secondDigit);
                             tmpDigit->positive = false;
                         }
@@ -320,12 +353,15 @@ pDigit makeExpression(pList list)
     return popOperand(&operand);
 }
 
+// Digit을 복사해주는 메서드로 pDigit을 입력받아 복사한 pDigit을 복사 해준 것을 리턴해준다.
 pDigit copyDigit(pDigit digit)
 {
+    // 리턴할 pDigit 을 초기화해준다.
     pDigit result = initializeDigit();
     pNum tmpBefore = NULL;
     pNum tmpAfter = NULL;
 
+    // before부터 하나씩 입력받아서 초기화 해준다.
     for(int i = 0; i < digit->beforeSize; i++)
     {
         pushNum(&tmpBefore, popNum(&(digit->before)));
@@ -363,9 +399,11 @@ void makePostfix(char* str, pList pList, pOperator Operator)
     List list = *pList;
     pOperator topOperator = Operator;
 
+    // str을 후위연산식으로 처리하는 메서드
     while(1)
     {
         int flag = 0;
+        // 만약 문자열이 끝났으면 연산자 스택에서 남은 것들을 전부 pop 해준다.
         if(str[i] == '\0')
         {
             while(!emptyOperator(topOperator))
@@ -375,24 +413,30 @@ void makePostfix(char* str, pList pList, pOperator Operator)
             break;
         }
 
+        // 만약 46번이 나온다면 아스키 코드로 .을 의미한다 넣어준다.
         if(str[i] == 46)
         {
             addExpression(&list, str[i]);
         }
 
+        // 만약 48 ~ 57번 사이의 수가 나온다면 아스키 코드로 0 ~ 9를 의미하므로 '0'을 빼서 넣어준다.
         else if((48 <= str[i] && str[i] <= 57))
         {
             addExpression(&list, str[i] - '0');
+            // 만약 다음 수가 숫자 혹은 소수점이 아니면 숫자가 끝났음을 의미하므로 -1을 추가해준다.
             if(!((48 <= str[i+1] && str[i+1] <= 57) || (str[i+1] == 46)))
             {
                 addExpression(&list, -1);
             }
         }
 
+        // 피연산자가 들어왔을 때 처리
         else if((str[i] == 40) || (str[i] == 41) || (str[i] == 42) || (str[i] == 43) || (str[i] == 45) || (str[i] == 47))
         {
+            // 만약 스택이 비어있다면 무조건 추가한다.
             if(emptyOperator(topOperator))
             {
+                // 하지만 만약 ( 앞에 숫자라면 *가 생략된 것 이므로 * 연산을 추가해준다.
                 if(str[i] == 40)
                 {
                     if((i != 0) && (48 <= str[i-1] && str[i-1] <= 57))
@@ -405,7 +449,8 @@ void makePostfix(char* str, pList pList, pOperator Operator)
             else
             {
                 char tmp = popOperator(&topOperator);
-                if(str[i] == 41) // )�� ���� ��, �켱 ���� 1��
+                // 만약 ) 가 나왔다면 ( 가 나올 때 까지 스택을 전부 뺀다.
+                if(str[i] == 41)
                 {
                     if(tmp != 40)
                     {
@@ -416,26 +461,32 @@ void makePostfix(char* str, pList pList, pOperator Operator)
                         }
                     }
 
+                    // 만약 다음이 0 ~ 9 사이에 있다면 마찬가지로 *를 더해준다.
                     if((48 <= str[i+1] && str[i+1] <= 57))
                     {
                         pushOperator(&topOperator, 42);
                     }
                 }
-                else if((str[i] == 42) || (str[i] == 47)) // * / ���� ��, �켱 ���� 2��
+                // 만약 연산자가 * 혹은 / 라면 두 번째 우선 순위
+                else if((str[i] == 42) || (str[i] == 47))
                 {
+                    // 만약 그 전 연산자가 ( + - 라면 그냥 푸쉬를 한다.
                     if((tmp == 43) || (tmp == 45) || (tmp == 40))
                     {
                         pushOperator(&topOperator, tmp);
                         pushOperator(&topOperator, str[i]);
                     }
+                    // 그게 아니라면 pop 을 한 이후에 push를 한다.
                     else
                     {
                         addExpression(&list, tmp);
                         pushOperator(&topOperator, str[i]);
                     }
                 }
-                else if((str[i] == 43) || (str[i] == 45)) // + - ���� ��, �켱 ���� 3��
+                // 만약 연산자가 + - 라면 세 번째 우선 순위
+                else if((str[i] == 43) || (str[i] == 45))
                 {
+                    // 만약 (- 형태라면 음수라는 걸 표현해준다.
                     if((str[i-1] == 40) && (str[i] == 45))
                     {
                         addExpression(&list, 10);
@@ -443,11 +494,13 @@ void makePostfix(char* str, pList pList, pOperator Operator)
                     }
                     else
                     {
+                        // 만약 그 전이 ( 라면 무시하고 push를 해준다.
                         if(tmp == 40)
                         {
                             pushOperator(&topOperator, tmp);
                             pushOperator(&topOperator, str[i]);
                         }
+                        // 그게 아니라면 pop을 한 이후 후위식에 넣어주고 들어 온 것을 push 해준다.
                         else
                         {
 //                            printf("%C", tmp);
@@ -456,25 +509,30 @@ void makePostfix(char* str, pList pList, pOperator Operator)
                         }
                     }
                 }
+                // 만약 ( 라면
                 else
                 {
                     if(i != 0)
                     {
+                        // 전이 숫자라면 3( 의 경우
                         if((48 <= str[i-1] && str[i-1] <= 57))
                         {
+                            // ( + - 일때는 스택에 쌓아주고 ( 를 넣는다.
                             if((tmp == 43) || (tmp == 45) || (tmp == 40))
                             {
                                 pushOperator(&topOperator, tmp);
                                 pushOperator(&topOperator, 42);
                                 pushOperator(&topOperator, str[i]);
                             }
+                            // 만약 * / 라면 pop을 해서 연산자 Stack에 쌓아주고 * 를 push 해준다.
                             else
                             {
-                                pushOperator(&topOperator, tmp);
+                                addExpression(&topOperator, tmp);
                                 pushOperator(&topOperator, 42);
                                 pushOperator(&topOperator, str[i]);
                             }
                         }
+                        // 만약 숫자가 아니라면 바로 push를 해준다.
                         else
                         {
                             pushOperator(&topOperator, tmp);
