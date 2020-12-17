@@ -24,6 +24,7 @@ void returnValue(pDigit digit)
         {
             printf("%d", popNum(&resultBefore));
         }
+        printf(".0");
     }
     else
     {
