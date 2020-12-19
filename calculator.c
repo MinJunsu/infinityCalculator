@@ -219,6 +219,12 @@ pDigit makeExpression(pList list)
         // 만약 tmp가 46이라면 소수점이 들어왔다는 의미이므로 digit의 앞 수 및 자리수를 저장해주고 lengthFlag를 변경해준다.
         else if(tmp == 46)
         {
+            // 예외 처리 1. 소수점이 많이 나온 오류
+            if(lengthFlag == 1)
+            {
+                printf("소수점에 문제가 있습니다. (8.8.8)");
+                exit(1);
+            }
             digit->beforeSize = length[0];
             digit->before = num;
             num = NULL;
@@ -408,7 +414,14 @@ void makePostfix(char* str, pList pList, pOperator Operator)
         {
             while(!emptyOperator(topOperator))
             {
-                addExpression(&list, popOperator(&topOperator));
+                int tmp = popOperator(&topOperator);
+                // 예외 처리 2. 괄호의 갯수가 다릅니다.
+                if((tmp == 40) || (tmp == 41))
+                {
+                    printf("( 와 ) 의 숫자가 맞지 않습니다.\n");
+                    exit(1);
+                }
+                addExpression(&list, tmp);
             }
             break;
         }
@@ -541,6 +554,19 @@ void makePostfix(char* str, pList pList, pOperator Operator)
                     }
                 }
             }
+        }
+        else
+        {
+            // 예외 처리 3. 옳지 않은 문자(%, @)가 들어있습니다.
+            printf("옳지 않은 문자가 들어있습니다.\n");
+            exit(1);
+        }
+
+        if(((str[i] == 42) || (str[i] == 43) || (str[i] == 45) || (str[i] == 47)) && ((str[i+1] == 42) || (str[i+1] == 43) || (str[i+1] == 45) || (str[i+1] == 47)))
+        {
+            // 예외 처리 4. 연산자가 중복해서 들어있습니다.
+            printf("연산자에 문제가 있습니다 eg) ++ , --, **, //");
+            exit(1);
         }
         i++;
     }

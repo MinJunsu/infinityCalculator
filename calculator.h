@@ -46,7 +46,6 @@ typedef struct operand
 } Operand, *pOperand;
 
 
-
 void initList(pList list);
 pNum getNum(int num);
 int pushNum(pNum* top, int op);
