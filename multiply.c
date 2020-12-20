@@ -209,6 +209,12 @@ pDigit mul(pDigit digit, int x, int under)
 //    returnValue(result);
 //    printf("\n");
 
+    if(result->beforeSize == 0)
+    {
+        pushNum(&(result->before), 0);
+        result->beforeSize = 1;
+    }
+
 
     return result;
 }

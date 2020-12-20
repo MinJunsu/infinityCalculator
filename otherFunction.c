@@ -1,12 +1,24 @@
 #include "calculator.h"
 
-pDigit round(pDigit digit, int round)
+void round(pDigit digit, int round)
 {
     // 자리수를 올림해 주어야 할때는
     if(round > 0)
     {
         pNum tmpNum = NULL;
-        pNum Num = NULL;
+        if(digit->beforeSize == 1)
+        {
+            int tmp = popNum(&(digit->before));
+            if(tmp == 0)
+            {
+                digit->beforeSize = 0;
+            }
+            else
+            {
+                pushNum(&(digit->before), tmp);
+            }
+        }
+
         // 만약 소수점 뒤가 있다면 pop을 하여 앞자리에 push를 해준다.
         if(digit->afterSize != 0)
         {
@@ -23,11 +35,6 @@ pDigit round(pDigit digit, int round)
                         pushNum(&tmpNum, 0);
                     }
                 }
-
-                for(int i = 0; i < round; i++)
-                {
-                    pushNum(&Num, popNum(&tmpNum));
-                }
             }
             else
             {
@@ -35,36 +42,48 @@ pDigit round(pDigit digit, int round)
                 {
                     pushNum(&tmpNum, popNum(&(digit->after)));
                 }
-
-                for(int i = 0; i < digit->afterSize; i++)
-                {
-                    pushNum(&Num, popNum(&tmpNum));
-                }
             }
 
+            bool flag = false;
+            int count = 0;
             for(int i = 0; i < round; i++)
             {
-                pushNum(&(digit->before), popNum(&Num));
+                int tmp = popNum(&tmpNum);
+                if(tmp != 0)
+                {
+                    count++;
+                    flag = true;
+                }
+                else
+                {
+                    if(flag)
+                    {
+                        count++;
+                    }
+                }
+                pushNum(&(digit->before), tmp);
             }
 
             if(digit->afterSize > round)
             {
                 for(int i = 0; i < (digit->afterSize - round); i++)
                 {
-                    pushNum(&(digit->after), popNum(&Num));
+                    int tmp = popNum(&tmpNum);
+                    pushNum(&(digit->after), tmp);
                 }
             }
+
+            digit->beforeSize += count;
         }
-            // 소수점 뒤가 없다면 0을 푸쉬해준다.
+        // 소수점 뒤가 없다면 0을 푸쉬해준다.
         else
         {
             for(int i = 0; i < round; i++)
             {
                 pushNum(&(digit->before), 0);
             }
+            digit->beforeSize += round;
         }
-
-        digit->beforeSize += round;
         digit->afterSize -= round;
     }
 
@@ -136,7 +155,7 @@ pDigit round(pDigit digit, int round)
             }
             digit->afterSize = afterSize + absNum;
         }
-        // 뒤 자리수가 존재 하지 않다면
+            // 뒤 자리수가 존재 하지 않다면
         else
         {
             bool flag = false;
@@ -186,6 +205,4 @@ pDigit round(pDigit digit, int round)
         pushNum(&(digit->before), 0);
         digit->beforeSize = 1;
     }
-
-    return digit;
 }

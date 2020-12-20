@@ -349,9 +349,19 @@ pDigit makeExpression(pList list)
                     break;
 
                 case 47:
-                    pushOperand(&operand, divide(firstDigit, secondDigit));
+                    tmpDigit = divide(firstDigit, secondDigit);
+                    // 위에서 곱셈을 정의하고 만약 두 수의 positive 의 합이 1이라면 두 부호가 다르다는 의미로 음수로 결과값을 음수로 처리한다.
+                    if((firstDigit->positive + secondDigit->positive) == 1)
+                    {
+                        tmpDigit->positive = false;
+                    }
+                        // 아니라면 결과값을 양수로 처리한다.
+                    else
+                    {
+                        tmpDigit->positive = true;
+                    }
+                    pushOperand(&operand, tmpDigit);
                     break;
-
             }
         }
         seek = seek->next;

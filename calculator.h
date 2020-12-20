@@ -68,5 +68,5 @@ pDigit copyDigit(pDigit digit);
 void viewAll(pList list);
 char* openFile(FILE* ifp);
 bool isBig(pDigit first, pDigit second);
-pDigit round(pDigit digit, int round);
+void round(pDigit digit, int round);
 bool isSame(pDigit first, pDigit second);
