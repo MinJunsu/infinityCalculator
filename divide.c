@@ -5,8 +5,8 @@ pDigit divide(pDigit first, pDigit second)
 {
     // 앞 수와 뒤 수를 모두 정수로 만들기 위해 올림 진행 eg) 0.004, 5 -> 4, 5000
     int maxCount = first->afterSize > second->afterSize ? first->afterSize : second->afterSize;
-    round(first, maxCount);
-    round(second, maxCount);
+    roundUpDown(first, maxCount);
+    roundUpDown(second, maxCount);
 
     if((second->beforeSize == 0) && (second->afterSize == 0))
     {
@@ -43,7 +43,7 @@ pDigit divide(pDigit first, pDigit second)
     }
 
     // 두 번째 자리의 숫자를 올려준다.
-    round(second, tmp);
+    roundUpDown(second, tmp);
 
     int count = 0;
     int posCount = 0;
@@ -99,7 +99,7 @@ pDigit divide(pDigit first, pDigit second)
             }
             // 자리수를 1 빼주고 second 역시 한자리 수 내려준다.
             tmp--;
-            round(second, -1);
+            roundUpDown(second, -1);
             try++;
         }
     }

@@ -1,6 +1,6 @@
 #include "calculator.h"
 
-void round(pDigit digit, int round)
+void roundUpDown(pDigit digit, int round)
 {
     // 자리수를 올림해 주어야 할때는
     if(round > 0)
