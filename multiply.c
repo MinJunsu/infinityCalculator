@@ -63,7 +63,7 @@ pDigit mul(pDigit digit, int x, int under)
                 }
             }
         }
-        // 소수점 뒤가 없다면 0을 푸쉬해준다.
+            // 소수점 뒤가 없다면 0을 푸쉬해준다.
         else
         {
             for(int i = 0; i < under; i++)
@@ -75,7 +75,7 @@ pDigit mul(pDigit digit, int x, int under)
         digit->afterSize -= under;
     }
 
-    // 만약 자리수를 내림해 주어야 할때는
+        // 만약 자리수를 내림해 주어야 할때는
     else if (under < 0)
     {
         pNum tmpNum = NULL;
@@ -105,7 +105,7 @@ pDigit mul(pDigit digit, int x, int under)
                 pushNum(&(digit->after), popNum(&tmpNum));
             }
         }
-        // 뒤 자리수가 존재 하지 않다면
+            // 뒤 자리수가 존재 하지 않다면
         else
         {
             // 앞 수를 꺼내서 뒤 자리에 보내준다.
@@ -169,7 +169,7 @@ pDigit mul(pDigit digit, int x, int under)
             }
         }
         // 뒤 수 처리가 끝나면 앞수를 처리한다. 이때 원리는 위와 동일하다.
-     for(int i = 0; i < digit->beforeSize; i++)
+        for(int i = 0; i < digit->beforeSize; i++)
         {
             new = (popNum(&(digit->before)) * x) + carry;
             carry = new / 10;

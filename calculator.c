@@ -258,6 +258,7 @@ pDigit makeExpression(pList list)
             // 만약 연산자가 들어온다면 우선 피연산자 스택에서 pop을 해준다.
             pDigit secondDigit = popOperand(&operand);
             pDigit firstDigit = popOperand(&operand);
+//            printf("isBig: %d\n", isBig(secondDigit, firstDigit));
 //            returnValue(copyDigit(firstDigit));
 //            printf(" ");
 //            returnValue(copyDigit(secondDigit));
@@ -576,20 +577,41 @@ bool isBig(pDigit first, pDigit second)
 {
     bool flag = false;
 
+//    printf("\n\nisBig: ");
+//    returnValue(copyDigit(first));
+//    printf ("   ");
+//    returnValue(copyDigit(second));
+//    printf("\n\n");
     if(first->beforeSize < second->beforeSize)
     {
         flag = true;
     }
+
     else if(first->beforeSize == second-> beforeSize)
     {
         pNum firstTmp = NULL; pNum secondTmp = NULL;
         int firstNum, secondNum;
         if(first->afterSize > second->afterSize)
         {
-            flag = false;
             for(int i = 0; i < (first->afterSize - second->afterSize); i++)
             {
                 pushNum(&firstTmp, popNum(&(first->after)));
+            }
+
+            for(int i = 0; i < second->afterSize; i++)
+            {
+                firstNum = popNum(&(first->after));
+                secondNum = popNum(&(second->after));
+                if(firstNum < secondNum)
+                {
+                    flag = true;
+                }
+                else if(firstNum > secondNum)
+                {
+                    flag = false;
+                }
+                pushNum(&firstTmp, firstNum);
+                pushNum(&secondTmp, secondNum);
             }
         }
         else
@@ -597,31 +619,31 @@ bool isBig(pDigit first, pDigit second)
             flag = true;
             for(int i = 0; i < (second->afterSize - first->afterSize); i++)
             {
-                pushNum(&second, popNum(&(second->after)));
+                pushNum(&secondTmp, popNum(&(second->after)));
             }
-        }
 
-        for(int i = 0; i < first->afterSize; i++)
-        {
-            firstNum = popNum(&(first->after));
-            secondNum = popNum(&(second->after));
-            if(firstNum < secondNum)
+            for(int i = 0; i < first->afterSize; i++)
             {
-                flag = true;
+                firstNum = popNum(&(first->after));
+                secondNum = popNum(&(second->after));
+                if(firstNum < secondNum)
+                {
+                    flag = true;
+                }
+                else if(firstNum > secondNum)
+                {
+                    flag = false;
+                }
+                pushNum(&firstTmp, firstNum);
+                pushNum(&secondTmp, secondNum);
             }
-            else if(firstNum > secondNum)
-            {
-                flag = false;
-            }
-            pushNum(&firstTmp, firstNum);
-            pushNum(&secondTmp, secondNum);
         }
 
         if(first->afterSize > second->afterSize)
         {
             for(int i = 0; i < (first->afterSize - second->afterSize); i++)
             {
-                pushNum(&firstTmp, popNum(&(first->after)));
+                pushNum(&(first->after), popNum(&firstTmp));
             }
             for(int i = 0; i < second->afterSize; i++)
             {
@@ -633,7 +655,7 @@ bool isBig(pDigit first, pDigit second)
         {
             for(int i = 0; i < (second->afterSize - first->afterSize); i++)
             {
-                pushNum(&second, popNum(&(second->after)));
+                pushNum(&(second->after), popNum(&secondTmp));
             }
             for(int i = 0; i < first->afterSize; i++)
             {
@@ -665,4 +687,55 @@ bool isBig(pDigit first, pDigit second)
         }
     }
     return flag;
+}
+
+bool isSame(pDigit first, pDigit second)
+{
+    bool flag = true;
+
+    if((first->beforeSize == second->beforeSize) && (first->afterSize == second->afterSize))
+    {
+        pNum firstBefore = NULL; pNum secondBefore = NULL;
+        for(int i = 0; i < first->beforeSize; i++)
+        {
+            int firstNum, secondNum;
+            firstNum = popNum(&(first->before));
+            secondNum = popNum(&(second->before));
+            if(firstNum != secondNum)
+            {
+                flag = false;
+            }
+            pushNum(&firstBefore, firstNum);
+            pushNum(&secondBefore, secondNum);
+        }
+
+        for(int i = 0; i < first->beforeSize; i++)
+        {
+            pushNum(&(first->before), popNum(&firstBefore));
+            pushNum(&(second->before), popNum(&secondBefore));
+        }
+
+        pNum firstAfter = NULL; pNum secondAfter = NULL;
+        for(int i = 0; i < first->afterSize; i++)
+        {
+            int firstNum, secondNum;
+            firstNum = popNum(&(first->after));
+            secondNum = popNum(&(second->after));
+            if(firstNum != secondNum)
+            {
+                flag = false;
+            }
+            pushNum(&firstAfter, firstNum);
+            pushNum(&secondAfter, secondNum);
+        }
+
+        for(int i = 0; i < first->afterSize; i++)
+        {
+            pushNum(&(first->after), popNum(&firstAfter));
+            pushNum(&(second->after), popNum(&secondAfter));
+        }
+
+        return flag;
+    }
+    return false;
 }
