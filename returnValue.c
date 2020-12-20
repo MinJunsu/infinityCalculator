@@ -62,5 +62,5 @@ void returnValue(pDigit digit)
         }
     }
 
-    printf(" before :%d, after : %d", digit->beforeSize, digit->afterSize);
+//    printf(" before :%d, after : %d", digit->beforeSize, digit->afterSize);
 }

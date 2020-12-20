@@ -8,6 +8,25 @@ pDigit divide(pDigit first, pDigit second)
     round(first, maxCount);
     round(second, maxCount);
 
+    if((second->beforeSize == 0) && (second->afterSize == 0))
+    {
+        printf("0으로는 나눌수가 없습니다.");
+        exit(1);
+    }
+    else if((second->beforeSize = 1) && (second->afterSize == 0))
+    {
+        int tmp = popNum(&(second->before));
+        if(tmp == 0)
+        {
+            printf("0으로는 나눌수가 없습니다.");
+            exit(1);
+        }
+        else
+        {
+            pushNum(&(second->before), tmp);
+        }
+    }
+
     // 앞 수와 뒤 수의 차를 구하고 결과 값을 저장할 result 를 선언해주고, 계산 값을 저장할 sum 을 선언해준다.
     int tmp = first->beforeSize - second->beforeSize;
     pDigit result = initializeDigit();
@@ -28,11 +47,13 @@ pDigit divide(pDigit first, pDigit second)
 
     int count = 0;
     int posCount = 0;
-//    while(1)
-    for(int i = 0; i < 10; i++)
+    int max = 500;
+    int try = 0;
+    while(1)
+//    for(int i = 0; i < 10; i++)
     {
         // 만약 first 와 sum이 같다면 종료한다.
-        if(isSame(first, sum))
+        if(isSame(first, sum) || try == max)
         {
             break;
         }
@@ -79,6 +100,7 @@ pDigit divide(pDigit first, pDigit second)
             // 자리수를 1 빼주고 second 역시 한자리 수 내려준다.
             tmp--;
             round(second, -1);
+            try++;
         }
     }
 
