@@ -98,6 +98,7 @@ pDigit plus(pDigit first, pDigit second)
     {
         return second;
     }
+
     if((second->beforeSize == 0) && (second->afterSize == 0))
     {
         return first;
@@ -114,7 +115,6 @@ pDigit plus(pDigit first, pDigit second)
     int maxAftersize;
     int maxBeforesize;
 
-    //size �� �� ���ϱ� ����, ����� size ����
     if (firstAftersize > secondAftersize)
     {
         maxAftersize = firstAftersize;
@@ -171,11 +171,22 @@ pDigit plus(pDigit first, pDigit second)
         pushNum(&resultBefore, new);
     }
 
-
     result->beforeSize = beforeSize;
     result->afterSize = afterSize;
     result->before = resultBefore;
     result->after = resultAfter;
 
+    if(result->afterSize == 1)
+    {
+        int tmp = popNum(&(result->after));
+        if(tmp == 0)
+        {
+            result->afterSize--;
+        }
+        else
+        {
+            pushNum(&(result->after), tmp);
+        }
+    }
     return result;
 }

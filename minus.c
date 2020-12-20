@@ -14,16 +14,6 @@ pDigit minus(pDigit first, pDigit second)
         positive = false;
     }
 
-
-//    printf("first: ");
-//    returnValue(copyDigit(first));
-//    printf(", second: ");
-//    returnValue(copyDigit(second));
-//    printf("\n");
-//
-//    printf("first b : %d, first a: %d", first->beforeSize, first->afterSize);
-//    printf(" second b : %d, second a: %d\n", second->beforeSize, second->afterSize);
-
 	int beforeSize = first->beforeSize > second->beforeSize ? first->beforeSize : second->beforeSize;
 	int afterSize  = first->afterSize > second->afterSize ? first->afterSize : second->afterSize;
     // int beforeSize = max(first->beforeSize, second->beforeSize);

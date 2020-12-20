@@ -28,7 +28,8 @@ pDigit divide(pDigit first, pDigit second)
 
     int count = 0;
     int posCount = 0;
-    while(1)
+//    while(1)
+    for(int i = 0; i < 10; i++)
     {
         // 만약 first 와 sum이 같다면 종료한다.
         if(isSame(first, sum))
@@ -45,6 +46,9 @@ pDigit divide(pDigit first, pDigit second)
                 if(isBig(plus(copyDigit(second), copyDigit(sum)), first))
                 {
                     sum = plus(copyDigit(second), copyDigit(sum));
+//                    printf("\n\n");
+//                    returnValue(copyDigit(sum));
+//                    printf("\n\n");
                 }
                 // 만약 그게 아니라면 자리 수 내림을 위해 break를 시켜주지만 이때 두 숫자가 같은거라면 sum을 더한 다음에 break를 시켜준다.
                 else
