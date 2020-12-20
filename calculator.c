@@ -558,9 +558,12 @@ void makePostfix(char* str, pList pList, pOperator Operator)
         }
         else
         {
-            // 예외 처리 3. 옳지 않은 문자(%, @)가 들어있습니다.
-            printf("옳지 않은 문자가 들어있습니다.\n");
-            exit(1);
+            if((33 <= str[i]) && (str[i] <= 126))
+            {
+                // 예외 처리 3. 옳지 않은 문자(%, @)가 들어있습니다.
+                printf("옳지 않은 문자가 들어있습니다.\n");
+                exit(1);
+            }
         }
 
         if(((str[i] == 42) || (str[i] == 43) || (str[i] == 45) || (str[i] == 47)) && ((str[i+1] == 42) || (str[i+1] == 43) || (str[i+1] == 45) || (str[i+1] == 47)))

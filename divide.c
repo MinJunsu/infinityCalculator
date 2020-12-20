@@ -7,19 +7,34 @@ pDigit divide(pDigit first, pDigit second)
     Num tmpFirst, tmpSecond;
     if((first->afterSize != 0) || (second->afterSize != 0))
     {
+        if(first->beforeSize == 1)
+        {
+            int tmp = popNum(&(first->before));
+            if(tmp == 0)
+            {
+                first->beforeSize = 0;
+            }
+            else
+            {
+                pushNum(&(first->before),tmp);
+            }
+        }
+
+        if(second->beforeSize == 1)
+        {
+            int tmp = popNum(&(second->before));
+            if(tmp == 0)
+            {
+                second->beforeSize = 0;
+            }
+            else
+            {
+                pushNum(&(second->before),tmp);
+            }
+        }
+
         if(first->afterSize > second->afterSize)
         {
-//            for(int i = 0; i < second->afterSize; i++)
-//            {
-//                pushNum(&tmpFirst, popNum(&(first->after)));
-//                pushNum(&tmpSecond, popNum(&(second->after)));
-//            }
-//
-//            for(int i = 0; i < (first->afterSize - second->afterSize); i++)
-//            {
-//                pushNum(&tmpFirst, popNum(&(first->after)));
-//                pushNum(&tmpSecond, 0);
-//            }
             for(int i = 0; i < (first->afterSize-second->afterSize); i++)
             {
                 pushNum(&tmpFirst, popNum(&(first->after)));
@@ -34,17 +49,6 @@ pDigit divide(pDigit first, pDigit second)
         }
         else
         {
-//            for(int i = 0; i < first->afterSize; i++)
-//            {
-//                pushNum(&tmpFirst, popNum(&(first->after)));
-//                pushNum(&tmpSecond, popNum(&(second->after)));
-//            }
-//
-//            for(int i = 0; i < (second->afterSize - first->afterSize); i++)
-//            {
-//                pushNum(&tmpFirst, 0);
-//                pushNum(&tmpSecond, popNum(&(second->after)));
-//            }
             for(int i = 0; i < (second->afterSize-first->afterSize); i++)
             {
                 pushNum(&tmpFirst, 0);
@@ -85,8 +89,8 @@ pDigit divide(pDigit first, pDigit second)
 //    returnValue(copyDigit(first));
     int count = 0;
     int posCount = 0;
-//    while(1)
-    for(int i = 0; i < 10; i++)
+    while(1)
+//    for(int i = 0; i < 10; i++)
     {
         if(isSame(first, sum))
         {

@@ -40,5 +40,5 @@ void returnValue(pDigit digit)
             printf("%d", popNum(&resultAfter));
         }
     }
-    printf("beforeSize: %d, afterSize: %d", digit->beforeSize, digit->afterSize);
+//    printf("beforeSize: %d, afterSize: %d", digit->beforeSize, digit->afterSize);
 }

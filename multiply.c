@@ -100,7 +100,7 @@ pDigit mul(pDigit digit, int x, int under)
                 }
             }
             // 그리고 방금 꺼낸 수를 다시 넣어 준다.
-            for(int i = 0; i < digit->afterSize; i++)
+            for(int i = 0; i < (digit->afterSize + abs(under)); i++)
             {
                 pushNum(&(digit->after), popNum(&tmpNum));
             }
