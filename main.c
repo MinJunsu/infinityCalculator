@@ -11,4 +11,5 @@ int main(int argc, char* argv[])
     free(str);
     pDigit digit = makeExpression(&list);
     returnValue(digit);
+//    viewAll(&list);
 }

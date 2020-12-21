@@ -287,15 +287,26 @@ pDigit makeExpression(pList list)
                     // 두 부호가 다르다는 의미
                     if((firstDigit->positive + secondDigit->positive) == 1)
                     {
+                        bool flag = true;
                         if(firstDigit->positive)
                         {
                             // 앞수가 양수 뒷 수가 음수면 앞수 minus 뒤수 처리를 한다.
+                            if(isBig(firstDigit, secondDigit))
+                            {
+                                flag= false;
+                            }
                             tmpDigit = minus(firstDigit, secondDigit);
+                            tmpDigit->positive = flag;
                         }
                         else
                         {
                             // 앞수가 음수 뒷 수가 양수면 뒤수 minus 앞수 처리를 한다.
+                            if(isBig(secondDigit, firstDigit))
+                            {
+                                flag = false;
+                            }
                             tmpDigit = minus(secondDigit, firstDigit);
+                            tmpDigit->positive = flag;
                         }
                     }
                     else
@@ -323,7 +334,13 @@ pDigit makeExpression(pList list)
                         if(firstDigit->positive)
                         {
                             // 앞 수가 양수고 뒤 수가 음수면 두 수 더한다.
+                            bool flag = true;
+                            if(isBig(firstDigit, secondDigit))
+                            {
+                                flag = false;
+                            }
                             tmpDigit = plus(firstDigit, secondDigit);
+                            tmpDigit->positive = flag;
                         }
                         else
                         {
@@ -551,7 +568,7 @@ void makePostfix(char* str, pList pList, pOperator Operator)
                             // 만약 * / 라면 pop을 해서 연산자 Stack에 쌓아주고 * 를 push 해준다.
                             else
                             {
-                                addExpression(&topOperator, tmp);
+                                addExpression(&list, tmp);
                                 pushOperator(&topOperator, 42);
                                 pushOperator(&topOperator, str[i]);
                             }
