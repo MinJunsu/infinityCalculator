@@ -56,7 +56,7 @@ pDigit divide(pDigit first, pDigit second)
         {
             break;
         }
-        // first 와 sum 이 다르다면 계산을 진행한다.
+            // first 와 sum 이 다르다면 계산을 진행한다.
         else
         {
             int i = 0;
@@ -70,7 +70,7 @@ pDigit divide(pDigit first, pDigit second)
 //                    returnValue(copyDigit(sum));
 //                    printf("\n\n");
                 }
-                // 만약 그게 아니라면 자리 수 내림을 위해 break를 시켜주지만 이때 두 숫자가 같은거라면 sum을 더한 다음에 break를 시켜준다.
+                    // 만약 그게 아니라면 자리 수 내림을 위해 break를 시켜주지만 이때 두 숫자가 같은거라면 sum을 더한 다음에 break를 시켜준다.
                 else
                 {
                     if(isSame(first, plus(copyDigit(second), copyDigit(sum))))
@@ -90,7 +90,7 @@ pDigit divide(pDigit first, pDigit second)
                 // 결과 값의 afterSize를 더해준다.
                 result->afterSize++;
             }
-            // 만약 0보다 크거나 같다면 역시 자리수 계산을 위해 posCount를 더해주고 숫자를 넣어준다.
+                // 만약 0보다 크거나 같다면 역시 자리수 계산을 위해 posCount를 더해주고 숫자를 넣어준다.
             else
             {
                 posCount++;
